@@ -2,14 +2,14 @@ package com.godiapper.stores
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Adapter
-import android.widget.GridLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.godiapper.stores.adapter.StoreAdapter
 import com.godiapper.stores.core.OnClickListener
-import com.godiapper.stores.core.Store
+import com.godiapper.stores.core.StoreApplication
+import com.godiapper.stores.core.StoreEntity
 import com.godiapper.stores.databinding.ActivityMainBinding
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class MainActivity : AppCompatActivity(), OnClickListener {
 
@@ -24,7 +24,12 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         setContentView(mbinding.root)
 
         mbinding.btnSave.setOnClickListener {
-            val store = Store(name = mbinding.etName.text.toString().trim())
+            val store = StoreEntity(name = mbinding.etName.text.toString().trim())
+
+            Thread {
+                StoreApplication.database.storeDao().addStore(store)
+            }
+
             mAdapter.add(store)
         }
 
@@ -34,6 +39,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private fun setupReciclerView() {
         mAdapter = StoreAdapter(mutableListOf(),this)
         mGridLayout = GridLayoutManager(this,2)
+        getStores()
 
         mbinding.recyclerView.apply {
             setHasFixedSize(true)
@@ -42,8 +48,17 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
     }
 
+    private fun getStores(){
+        doAsync {
+            val stores = StoreApplication.database.storeDao().getAllStores()
+            uiThread {
+                mAdapter.setStores(stores)
+            }
+        }
+    }
+
     /*------------------------OnClickListener--------------------------*/
-    override fun onClick(store: Store) {
+    override fun onClick(storeEntity: StoreEntity) {
         TODO("Not yet implemented")
     }
 }
