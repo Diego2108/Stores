@@ -1,4 +1,4 @@
-package com.godiapper.stores
+package com.godiapper.stores.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
