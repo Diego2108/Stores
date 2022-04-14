@@ -3,6 +3,7 @@ package com.godiapper.stores.ui.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.godiapper.stores.R
 import com.godiapper.stores.adapter.StoreAdapter
 import com.godiapper.stores.core.OnClickListener
 import com.godiapper.stores.core.StoreApplication
@@ -11,7 +12,7 @@ import com.godiapper.stores.databinding.ActivityMainBinding
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class MainActivity : AppCompatActivity(), OnClickListener {
+class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     private lateinit var mbinding: ActivityMainBinding
 
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         mbinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mbinding.root)
 
-        mbinding.btnSave.setOnClickListener {
+        /*mbinding.btnSave.setOnClickListener {
             val store = StoreEntity(name = mbinding.etName.text.toString().trim())
 
             Thread {
@@ -31,9 +32,25 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             }
 
             mAdapter.add(store)
-        }
+        }*/
+
+        mbinding.fab.setOnClickListener { launchEditFragment() }
 
         setupReciclerView()
+    }
+
+    private fun launchEditFragment() {
+        val fragment = EditStoreFragment()
+
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+
+        fragmentTransaction.add(R.id.containerMain, fragment)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+
+        //mbinding.fab.hide()
+        hideFab()
     }
 
     private fun setupReciclerView() {
@@ -78,5 +95,9 @@ class MainActivity : AppCompatActivity(), OnClickListener {
                 mAdapter.delete(storeEntity)
             }
         }
+    }
+
+    override fun hideFab(isVisible: Boolean) {
+        if (isVisible) mbinding.fab.show() else mbinding.fab.hide()
     }
 }
