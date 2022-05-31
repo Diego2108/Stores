@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.godiapper.stores.R
 import com.godiapper.stores.core.OnClickListener
 import com.godiapper.stores.core.StoreEntity
@@ -30,6 +32,12 @@ class StoreAdapter(private var stores:MutableList<StoreEntity>, private var list
             binding.tvName.text = store.name
             binding.cbFavorite.isChecked = store.isfavorite
 
+            Glide.with(mContext)
+                .load(store.photoUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .into(binding.imgPhoto)
+
         }
     }
 
@@ -41,8 +49,10 @@ class StoreAdapter(private var stores:MutableList<StoreEntity>, private var list
     }
 
     fun add(storeEntity: StoreEntity) {
-        stores.add(storeEntity)
-        notifyDataSetChanged()
+        if (!stores.contains(storeEntity)){
+            stores.add(storeEntity)
+            notifyItemInserted(stores.size-1)
+        }
     }
 
     fun update(storeEntity: StoreEntity) {
@@ -66,7 +76,7 @@ class StoreAdapter(private var stores:MutableList<StoreEntity>, private var list
 
         fun setListener(storeEntity: StoreEntity){
             with(binding.root) {
-                setOnClickListener { listener.onClick(storeEntity) }
+                setOnClickListener { listener.onClick(storeEntity.id) }
                 setOnLongClickListener {
                     listener.onDeleteStore(storeEntity)
                     true
