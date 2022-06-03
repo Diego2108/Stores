@@ -15,6 +15,7 @@ import com.godiapper.stores.core.StoreApplication
 import com.godiapper.stores.core.StoreEntity
 import com.godiapper.stores.databinding.FragmentEditStoreBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -45,19 +46,37 @@ class EditStoreFragment : Fragment() {
             mStoreEntity = StoreEntity(name = "", phone = "", photoUrl = "")
         }
 
+        setupActionBar()
+        setupTextFields()
+    }
+
+    private fun setupActionBar() {
         mActivity = activity as? MainActivity
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        mActivity?.supportActionBar?.title = getString(R.string.edit_store_title_add)
+        mActivity?.supportActionBar?.title = if (mIsEditMode) getString(R.string.edit_store_title_edit)
+                                            else getString(R.string.edit_store_title_add)
 
         setHasOptionsMenu(true)
 
-        mBinding.etPhotoUrl.addTextChangedListener {
-            Glide.with(this)
-                .load(mBinding.etPhotoUrl.text.toString())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .into(mBinding.imagePhoto)
+    }
+
+    private fun setupTextFields() {
+        with(mBinding){
+            etName.addTextChangedListener { validateFields(tilName) }
+            etPhone.addTextChangedListener { validateFields(tilPhone) }
+            etPhotoUrl.addTextChangedListener {
+                validateFields(tilPhotoUrl)
+                loadImage(it.toString().trim())
+            }
         }
+    }
+
+    private fun loadImage(url: String){
+        Glide.with(this)
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .into(mBinding.imagePhoto)
     }
 
     private fun getStore(id: Long) {
@@ -96,7 +115,8 @@ class EditStoreFragment : Fragment() {
                     phone = mBinding.etPhone.text.toString().trim(),
                     website = mBinding.etWebsite.text.toString().trim(),
                     photoUrl = mBinding.etPhotoUrl.text.toString().trim())*/
-                if (mStoreEntity != null){
+                if (mStoreEntity != null &&
+                    validateFields(mBinding.tilPhotoUrl,mBinding.tilPhone,mBinding.tilName)){
                     with(mStoreEntity!!){
                         name = mBinding.etName.text.toString().trim()
                         phone = mBinding.etPhone.text.toString().trim()
@@ -128,6 +148,47 @@ class EditStoreFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private  fun validateFields(vararg textFields: TextInputLayout): Boolean{
+        var isValid =  true
+
+        for (textField in textFields){
+            if (textField.editText?.text.toString().trim().isEmpty()){
+                textField.error = getString(R.string.helper_required)
+                isValid = false
+            }else textField.error = null
+        }
+
+        if (!isValid) Snackbar.make(mBinding.root,
+            R.string.edit_store_message_valid,
+            Snackbar.LENGTH_SHORT).show()
+
+        return isValid
+    }
+
+    /*private fun validateFields(): Boolean {
+        var isValid = true
+
+        if(mBinding.etPhotoUrl.text.toString().trim().isEmpty()){
+            mBinding.tilPhotoUrl.error = getString(R.string.helper_required)
+            mBinding.etPhotoUrl.requestFocus()
+            isValid = false
+        }
+
+        if(mBinding.etPhone.text.toString().trim().isEmpty()){
+            mBinding.tilPhone.error = getString(R.string.helper_required)
+            mBinding.etPhone.requestFocus()
+            isValid = false
+        }
+
+        if(mBinding.etName.text.toString().trim().isEmpty()){
+            mBinding.tilName.error = getString(R.string.helper_required)
+            mBinding.etName.requestFocus()
+            isValid = false
+        }
+
+        return isValid
+    }*/
 
     private fun hideKeyboard(){
         val imm = mActivity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
