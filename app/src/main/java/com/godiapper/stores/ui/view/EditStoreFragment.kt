@@ -76,7 +76,7 @@ class EditStoreFragment : Fragment() {
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .centerCrop()
-            .into(mBinding.imagePhoto)
+            .into(mBinding.imgPhoto)
     }
 
     private fun getStore(id: Long) {

@@ -11,6 +11,7 @@ data class StoreEntity(
     var website: String = "",
     var photoUrl: String,
     var isfavorite: Boolean = false) {
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

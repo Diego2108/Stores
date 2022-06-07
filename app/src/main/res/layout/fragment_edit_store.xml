@@ -60,7 +60,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint_website"
-            app:helperText="@string/helper_required"
             app:endIconMode="clear_text"
             android:layout_marginTop="@dimen/common_paddin_default"
             app:startIconDrawable="@drawable/ic_link"
@@ -91,6 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/hint_photo"
+                app:helperText="@string/helper_required"
                 app:endIconMode="clear_text"
                 app:startIconDrawable="@drawable/ic_link"
                 style="@style/Widget.Material3.TextInputEditText.OutlinedBox">
@@ -104,7 +104,7 @@
                     android:maxLines="@integer/lines_url_photo"/>
             </com.google.android.material.textfield.TextInputLayout>
             <ImageView
-                android:id="@+id/image_photo"
+                android:id="@+id/img_photo"
                 android:layout_width="@dimen/photo_size_thumb"
                 android:layout_height="@dimen/photo_size_thumb"
                 android:layout_marginStart="@dimen/common_paddin_default"
