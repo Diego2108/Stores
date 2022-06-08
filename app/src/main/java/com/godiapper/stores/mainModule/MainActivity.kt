@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,13 +15,14 @@ import com.godiapper.stores.core.entities.StoreEntity
 import com.godiapper.stores.databinding.ActivityMainBinding
 import com.godiapper.stores.editModule.EditStoreFragment
 import com.godiapper.stores.core.utils.MainAux
+import com.godiapper.stores.editModule.viewModel.EditStoreViewModel
 import com.godiapper.stores.mainModule.adapters.StoreAdapter
 import com.godiapper.stores.mainModule.viewModel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
+class MainActivity : AppCompatActivity(), OnClickListener {
 
     private lateinit var mbinding: ActivityMainBinding
 
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     //MVVM
     private lateinit var mMainViewModel: MainViewModel
+    private lateinit var mEditStoreViewModel: EditStoreViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +60,18 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         mMainViewModel.getStores().observe(this,{ stores ->
             mAdapter.setStores(stores)
         })
+
+        mEditStoreViewModel = ViewModelProvider(this).get(EditStoreViewModel::class.java)
+        mEditStoreViewModel.getShowFab().observe(this,{ isVisible ->
+            if (isVisible) mbinding.fab.show() else mbinding.fab.hide()
+        })
+
     }
 
     private fun launchEditFragment(args:Bundle? = null) {
+
+        mEditStoreViewModel.setShowFab(false)
+
         val fragment = EditStoreFragment()
         if (args != null) fragment.arguments = args
 
@@ -69,9 +81,6 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         fragmentTransaction.add(R.id.containerMain, fragment)
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
-
-        //mbinding.fab.hide()
-        hideFab()
     }
 
     private fun setupReciclerView() {
@@ -155,7 +164,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
             Toast.makeText(this,R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
     }
 
-    override fun hideFab(isVisible: Boolean) {
+   /* override fun hideFab(isVisible: Boolean) {
         if (isVisible) mbinding.fab.show() else mbinding.fab.hide()
     }
 
@@ -165,5 +174,5 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     override fun updateStore(storeEntity: StoreEntity) {
         mAdapter.update(storeEntity)
-    }
+    }*/
 }
