@@ -1,18 +1,21 @@
-package com.godiapper.stores.ui.view
+package com.godiapper.stores.mainModule
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.godiapper.stores.R
-import com.godiapper.stores.adapter.StoreAdapter
-import com.godiapper.stores.core.OnClickListener
 import com.godiapper.stores.core.StoreApplication
-import com.godiapper.stores.core.StoreEntity
+import com.godiapper.stores.core.entities.StoreEntity
 import com.godiapper.stores.databinding.ActivityMainBinding
+import com.godiapper.stores.editModule.EditStoreFragment
+import com.godiapper.stores.core.utils.MainAux
+import com.godiapper.stores.mainModule.adapters.StoreAdapter
+import com.godiapper.stores.mainModule.viewModel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -23,6 +26,9 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     private lateinit var mAdapter: StoreAdapter
     private lateinit var mGridLayout: GridLayoutManager
+
+    //MVVM
+    private lateinit var mMainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +48,15 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         mbinding.fab.setOnClickListener { launchEditFragment() }
 
         setupReciclerView()
+
+        setupViewModel()
+    }
+
+    private fun setupViewModel() {
+        mMainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        mMainViewModel.getStores().observe(this,{ stores ->
+            mAdapter.setStores(stores)
+        })
     }
 
     private fun launchEditFragment(args:Bundle? = null) {
@@ -62,7 +77,6 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
     private fun setupReciclerView() {
         mAdapter = StoreAdapter(mutableListOf(),this)
         mGridLayout = GridLayoutManager(this,resources.getInteger(R.integer.main_columns))
-        getStores()
 
         mbinding.recyclerView.apply {
             setHasFixedSize(true)
@@ -71,14 +85,6 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         }
     }
 
-    private fun getStores(){
-        doAsync {
-            val stores = StoreApplication.database.storeDao().getAllStores()
-            uiThread {
-                mAdapter.setStores(stores)
-            }
-        }
-    }
 
     /*------------------------OnClickListener--------------------------*/
     override fun onClick(storeId: Long) {
@@ -90,12 +96,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     override fun onFavoriteStore(storeEntity: StoreEntity) {
         storeEntity.isfavorite = !storeEntity.isfavorite
-        doAsync {
-            StoreApplication.database.storeDao().updateStore(storeEntity)
-            uiThread {
-                updateStore(storeEntity)
-            }
-        }
+        // TODO: favorite 
     }
 
     override fun onDeleteStore(storeEntity: StoreEntity) {
@@ -119,12 +120,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.dialog_delete_title)
             .setPositiveButton(R.string.dialog_delete_confirmar,{ dialogInterface, i ->
-                doAsync {
-                    StoreApplication.database.storeDao().deleteStore(storeEntity)
-                    uiThread {
-                        mAdapter.delete(storeEntity)
-                    }
-                }
+                // TODO: delete
             })
             .setNegativeButton(R.string.dialog_delete_cancel,null)
             .show()

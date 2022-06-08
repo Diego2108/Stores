@@ -1,4 +1,6 @@
-package com.godiapper.stores.core
+package com.godiapper.stores.mainModule
+
+import com.godiapper.stores.core.entities.StoreEntity
 
 interface OnClickListener {
     fun onClick(storeId: Long)

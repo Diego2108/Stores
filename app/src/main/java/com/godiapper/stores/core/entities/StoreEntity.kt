@@ -1,4 +1,4 @@
-package com.godiapper.stores.core
+package com.godiapper.stores.core.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

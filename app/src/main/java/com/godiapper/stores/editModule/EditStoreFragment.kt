@@ -1,4 +1,4 @@
-package com.godiapper.stores.ui.view
+package com.godiapper.stores.editModule
 
 import android.content.Context
 import android.os.Bundle
@@ -12,8 +12,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.godiapper.stores.R
 import com.godiapper.stores.core.StoreApplication
-import com.godiapper.stores.core.StoreEntity
+import com.godiapper.stores.core.entities.StoreEntity
 import com.godiapper.stores.databinding.FragmentEditStoreBinding
+import com.godiapper.stores.mainModule.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import org.jetbrains.anko.doAsync

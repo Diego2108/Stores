@@ -1,6 +1,7 @@
-package com.godiapper.stores.core
+package com.godiapper.stores.core.database
 
 import androidx.room.*
+import com.godiapper.stores.core.entities.StoreEntity
 
 @Dao
 interface StoreDao {

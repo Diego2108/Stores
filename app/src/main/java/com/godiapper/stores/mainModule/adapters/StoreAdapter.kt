@@ -1,4 +1,4 @@
-package com.godiapper.stores.adapter
+package com.godiapper.stores.mainModule.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.godiapper.stores.R
-import com.godiapper.stores.core.OnClickListener
-import com.godiapper.stores.core.StoreEntity
+import com.godiapper.stores.core.entities.StoreEntity
 import com.godiapper.stores.databinding.ItemStoreBinding
+import com.godiapper.stores.mainModule.OnClickListener
 
 class StoreAdapter(private var stores:MutableList<StoreEntity>, private var listener: OnClickListener) :
     RecyclerView.Adapter<StoreAdapter.ViewHolder>(){
@@ -43,8 +43,8 @@ class StoreAdapter(private var stores:MutableList<StoreEntity>, private var list
 
     override fun getItemCount(): Int = stores.size
 
-    fun setStores(stores: MutableList<StoreEntity>) {
-        this.stores = stores
+    fun setStores(stores: List<StoreEntity>) {
+        this.stores = stores as MutableList<StoreEntity>
         notifyDataSetChanged()
     }
 
