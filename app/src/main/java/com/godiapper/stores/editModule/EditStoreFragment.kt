@@ -32,7 +32,7 @@ class EditStoreFragment : Fragment() {
 
     private var mActivity: MainActivity? = null
     private var mIsEditMode: Boolean = false
-    private var mStoreEntity: StoreEntity? = null
+    private lateinit var mStoreEntity: StoreEntity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,24 +50,48 @@ class EditStoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val id = arguments?.getLong(getString(R.string.arg_id),0)
-        if (id != null && id != 0L){
-            mIsEditMode = true
-            getStore(id)
-        }else {
-            mIsEditMode = false
-            mStoreEntity = StoreEntity(name = "", phone = "", photoUrl = "")
-        }
-
         //MVVM
         setupViewModel()
 
-        setupActionBar()
         setupTextFields()
     }
 
     private fun setupViewModel() {
+        mEditStoreViewModel.getStoreSelected().observe(viewLifecycleOwner, {
+            mStoreEntity = it
+            if (it.id != 0L){
+                mIsEditMode = true
+                setUiStore(it)
+            }else {
+                mIsEditMode = false
+            }
+            setupActionBar()
+        })
 
+        mEditStoreViewModel.getResult().observe(viewLifecycleOwner, { result ->
+            hideKeyboard()
+
+            when(result) {
+                is Long -> {
+
+                    mStoreEntity.id = result
+
+                    mEditStoreViewModel.setStoreSelected(mStoreEntity)
+
+                    mActivity?.onBackPressed()
+                    Toast.makeText(mActivity, R.string.edit_store_message_save_success,Toast.LENGTH_SHORT)
+                }
+                is StoreEntity -> {
+
+                    mEditStoreViewModel.setStoreSelected(mStoreEntity)
+
+                    Snackbar.make(mBinding.root,
+                        R.string.edit_store_message_update_success,
+                        Snackbar.LENGTH_SHORT).show()
+                }
+            }
+
+        })
     }
 
     private fun setupActionBar() {
@@ -99,15 +123,6 @@ class EditStoreFragment : Fragment() {
             .into(mBinding.imgPhoto)
     }
 
-    private fun getStore(id: Long) {
-        doAsync {
-            mStoreEntity =  StoreApplication.database.storeDao().getStoreById(id)
-            uiThread { if (mStoreEntity != null) setUiStore(mStoreEntity!!)
-
-            }
-        }
-    }
-
     private fun setUiStore(storeEntity: StoreEntity) {
         with(mBinding){
             etName.text = storeEntity.name.editable()
@@ -131,22 +146,19 @@ class EditStoreFragment : Fragment() {
                 true
             }
             R.id.action_save -> {
-                /*val store = StoreEntity(name = mBinding.etName.text.toString().trim(),
-                    phone = mBinding.etPhone.text.toString().trim(),
-                    website = mBinding.etWebsite.text.toString().trim(),
-                    photoUrl = mBinding.etPhotoUrl.text.toString().trim())*/
-                if (mStoreEntity != null &&
-                    validateFields(mBinding.tilPhotoUrl,mBinding.tilPhone,mBinding.tilName)){
-                    with(mStoreEntity!!){
+                if (validateFields(mBinding.tilPhotoUrl,mBinding.tilPhone,mBinding.tilName)){
+                    with(mStoreEntity){
                         name = mBinding.etName.text.toString().trim()
                         phone = mBinding.etPhone.text.toString().trim()
                         website = mBinding.etWebsite.text.toString().trim()
                         photoUrl = mBinding.etPhotoUrl.text.toString().trim()
                     }
 
-                    doAsync {
-                        if (mIsEditMode) StoreApplication.database.storeDao().updateStore(mStoreEntity!!)
-                        else mStoreEntity!!.id = StoreApplication.database.storeDao().addStore(mStoreEntity!!)
+                    if (mIsEditMode) mEditStoreViewModel.updateStore(mStoreEntity)
+                    else mEditStoreViewModel.saveStore(mStoreEntity)
+
+                    /*doAsync {
+
                         uiThread {
                             hideKeyboard()
 
@@ -162,7 +174,7 @@ class EditStoreFragment : Fragment() {
                                 Toast.makeText(mActivity, R.string.edit_store_message_save_success,Toast.LENGTH_SHORT)
                             }
                         }
-                    }
+                    }*/
                 }
                 true
             }
@@ -225,6 +237,7 @@ class EditStoreFragment : Fragment() {
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         mActivity?.supportActionBar?.title = getString(R.string.app_name)
         mEditStoreViewModel.setShowFab(true)
+        mEditStoreViewModel.setResult(Any())
 
         setHasOptionsMenu(false)
         super.onDestroy()

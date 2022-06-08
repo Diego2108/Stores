@@ -66,15 +66,18 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             if (isVisible) mbinding.fab.show() else mbinding.fab.hide()
         })
 
+        mEditStoreViewModel.getStoreSelected().observe(this,{ storeEntity ->
+            mAdapter.add(storeEntity)
+        })
+
     }
 
-    private fun launchEditFragment(args:Bundle? = null) {
+    private fun launchEditFragment(storeEntity: StoreEntity = StoreEntity()) {
 
         mEditStoreViewModel.setShowFab(false)
+        mEditStoreViewModel.setStoreSelected(storeEntity)
 
         val fragment = EditStoreFragment()
-        if (args != null) fragment.arguments = args
-
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
 
@@ -96,11 +99,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
 
     /*------------------------OnClickListener--------------------------*/
-    override fun onClick(storeId: Long) {
-        val args = Bundle()
-        args.putLong(getString(R.string.arg_id), storeId)
-
-        launchEditFragment(args)
+    override fun onClick(storeEntity: StoreEntity) {
+        launchEditFragment(storeEntity)
     }
 
     override fun onFavoriteStore(storeEntity: StoreEntity) {
