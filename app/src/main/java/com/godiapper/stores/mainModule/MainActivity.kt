@@ -38,16 +38,6 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         mbinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mbinding.root)
 
-        /*mbinding.btnSave.setOnClickListener {
-            val store = StoreEntity(name = mbinding.etName.text.toString().trim())
-
-            Thread {
-                StoreApplication.database.storeDao().addStore(store)
-            }
-
-            mAdapter.add(store)
-        }*/
-
         mbinding.fab.setOnClickListener { launchEditFragment() }
 
         setupReciclerView()
@@ -164,15 +154,4 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             Toast.makeText(this,R.string.main_error_no_resolve, Toast.LENGTH_LONG).show()
     }
 
-   /* override fun hideFab(isVisible: Boolean) {
-        if (isVisible) mbinding.fab.show() else mbinding.fab.hide()
-    }
-
-    override fun addStore(storeEntity: StoreEntity) {
-        mAdapter.add(storeEntity)
-    }
-
-    override fun updateStore(storeEntity: StoreEntity) {
-        mAdapter.update(storeEntity)
-    }*/
 }

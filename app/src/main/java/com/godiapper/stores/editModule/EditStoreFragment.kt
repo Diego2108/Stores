@@ -157,24 +157,6 @@ class EditStoreFragment : Fragment() {
                     if (mIsEditMode) mEditStoreViewModel.updateStore(mStoreEntity)
                     else mEditStoreViewModel.saveStore(mStoreEntity)
 
-                    /*doAsync {
-
-                        uiThread {
-                            hideKeyboard()
-
-                            if (mIsEditMode){
-                                //fixme viewModel
-                                //mActivity?.updateStore(mStoreEntity!!)
-                                Snackbar.make(mBinding.root,
-                                    R.string.edit_store_message_update_success,
-                                    Snackbar.LENGTH_SHORT).show()
-                            } else {
-                               // fixme mActivity?.addStore(mStoreEntity!!)
-                                mActivity?.onBackPressed()
-                                Toast.makeText(mActivity, R.string.edit_store_message_save_success,Toast.LENGTH_SHORT)
-                            }
-                        }
-                    }*/
                 }
                 true
             }
@@ -198,30 +180,6 @@ class EditStoreFragment : Fragment() {
 
         return isValid
     }
-
-    /*private fun validateFields(): Boolean {
-        var isValid = true
-
-        if(mBinding.etPhotoUrl.text.toString().trim().isEmpty()){
-            mBinding.tilPhotoUrl.error = getString(R.string.helper_required)
-            mBinding.etPhotoUrl.requestFocus()
-            isValid = false
-        }
-
-        if(mBinding.etPhone.text.toString().trim().isEmpty()){
-            mBinding.tilPhone.error = getString(R.string.helper_required)
-            mBinding.etPhone.requestFocus()
-            isValid = false
-        }
-
-        if(mBinding.etName.text.toString().trim().isEmpty()){
-            mBinding.tilName.error = getString(R.string.helper_required)
-            mBinding.etName.requestFocus()
-            isValid = false
-        }
-
-        return isValid
-    }*/
 
     private fun hideKeyboard(){
         val imm = mActivity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
